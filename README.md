@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://files.catbox.moe/2klf23.png" alt="NovaX" width="100%">
+  <img src="https://files.catbox.moe/2klf23.png" alt="NovaX" width="400 height=400">
 </p>
 
 <h1 align="center">Hi 👋, I'm Anonymous</h1>
@@ -42,7 +42,7 @@ This project is licensed under the MIT License.
 
 **Anonymous**
 
-- GitHub: [@XdKing2](https://github.com/anonymousofficial)
+- GitHub: [@Anonymous](https://github.com/anonymousofficial)
 - WhatsApp Channel: [Join Channel](https://whatsapp.com/channel/0029VbB3YxTDJ6H15SKoBv3S)
 
 ## 💬 Support
