@@ -38,7 +38,7 @@
     "node": ">=18.x"
   },
   "keywords": [
-    "novax",
+    "novax"
   ],
   "author": "Anonymous",
   "license": "MIT"
