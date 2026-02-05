@@ -5,7 +5,7 @@ module.exports = {
     AUTO_LIKE_EMOJI: ['🌸', '🪴', '💫', '🍂', '🌟','🫀', '👀', '🤖', '🚩', '🥰', '🗿', '💜', '💙', '🌝', '🖤', '💚'],
     PREFIX: '.',
     MAX_RETRIES: 3,
-    GROUP_INVITE_LINK: 'https://chat.whatsapp.com/Dh7gxX9AoVD8gsgWUkhB9r',
+    GROUP_INVITE_LINK: 'https://chat.whatsapp.com/H5pumKQEwT98Xq3rz2kdlL',
     ADMIN_LIST_PATH: './admin.json',
     IMAGE_PATH: 'https://files.catbox.moe/2klf23.png',
     NEWSLETTER_JID: '120363402507750390@newsletter',
@@ -17,5 +17,5 @@ module.exports = {
     OWNER_NUMBER: '263789544743',
     BOT_VERSION: '1.0.2',
     BOT_FOOTER: '*>Powered by Anonymous*',
-    CHANNEL_LINK: 'https://whatsapp.com/channel/0029VbB3YxTDJ6H15SKoBv3S',
+    CHANNEL_LINK: 'https://whatsapp.com/channel/0029Vb7VSm62f3EAZILJ550J',
 };
