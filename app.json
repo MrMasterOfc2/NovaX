@@ -1,0 +1,21 @@
+{
+    "name": "novax",
+    "description": "mini web bot",
+    "logo": "https://files.catbox.moe/2klf23.png",
+    "repository": "https://github.com/anonymousofficial26/NovaX",
+    
+    "keywords": [
+    "novax"
+    ],
+    
+    "success_url": "/", 
+    "buildpacks": [{ "url": "https://github.com/heroku/heroku-buildpack-nodejs#latest" } ],
+    "env": {      
+      "PORT": {
+        "description": "Port for web app.4000,5000,3000... any!",
+        "value": "5000",
+        "required": false 
+      }
+    }   
+
+}
