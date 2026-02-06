@@ -1,0 +1,11 @@
+{
+  "text": "\n╭─「  `🤖{botTitle}`  」 ─➤*  \n*│\n*│*🥷 *Oᴡɴᴇʀ :* {ownerName}\n*│*✒️ *Pʀᴇғɪx :* {prefix}\n*│*🧬 *Vᴇʀsɪᴏɴ :*  {version}\n*│*🎈 *Pʟᴀᴛғᴏʀᴍ :* {platform}\n*│*⏰ *Uᴘᴛɪᴍᴇ :* {uptime}\n*╰──────●●➤*\n\n╭────────￫\n│  🔧ғᴇᴀᴛᴜʀᴇs                  \n│  [1] 👑 ᴏᴡɴᴇʀ                           \n│  [2] 📥 ᴅᴏᴡɴʟᴏᴀᴅ                           \n│  [3] 🛠️ ᴛᴏᴏʟs                            \n│  [4] ⚙️ sᴇᴛᴛɪɴɢs                       \n│  [5] 🎨 ᴄʀᴇᴀᴛɪᴠᴇ                             \n╰───────￫\n\n🎯 ᴛᴀᴘ ᴀ ᴄᴀᴛᴇɢᴏʀʏ ʙᴇʟᴏᴡ!\n",
+  "footer": "*▶ ● 𝐅𝚁𝙴𝙴 𝐁𝙾𝚃 *",
+  "buttons": [
+    {"command": "owner", "label": "👑 ᴏᴡɴᴇʀ"},
+    {"command": "download", "label": "📥 ᴅᴏᴡɴʟᴏᴀᴅ"},
+    {"command": "tools", "label": "🛠️ ᴛᴏᴏʟs"},
+    {"command": "settings", "label": "⚙️ 𝘚𝘦𝘵𝘵𝘪𝘯𝘨𝘴"},
+    {"command": "creative", "label": "🎨 ᴄʀᴇᴀᴛɪᴠᴇ"}
+  ]
+}
