@@ -26,6 +26,7 @@ const {
 } = require('baileys');
 
 const MENU_TEMPLATES_PATH = path.join(__dirname, 'commands');
+const COMMAND_ALIASES_PATH = path.join(MENU_TEMPLATES_PATH, 'aliases.json');
 
 function applyTemplate(text, data) {
   return String(text || '').replace(/\{(\w+)\}/g, (match, key) => {
@@ -45,6 +46,20 @@ function loadMenuTemplate(name) {
   }
 }
 
+function loadCommandAliases() {
+  try {
+    const raw = fs.readFileSync(COMMAND_ALIASES_PATH, 'utf8');
+    const parsed = JSON.parse(raw);
+    return {
+      aliases: parsed?.aliases || {},
+      extraCommands: parsed?.extraCommands || []
+    };
+  } catch (error) {
+    console.warn(`Failed to load command aliases from ${COMMAND_ALIASES_PATH}`, error);
+    return { aliases: {}, extraCommands: [] };
+  }
+}
+
 function buildMenuButtons(entries, prefix) {
   if (!Array.isArray(entries)) return [];
   return entries.map((entry) => ({
@@ -53,6 +68,11 @@ function buildMenuButtons(entries, prefix) {
     type: 1
   }));
 }
+
+const commandAliasConfig = loadCommandAliases();
+const commandAliases = commandAliasConfig.aliases;
+const extraCommands = new Set(commandAliasConfig.extraCommands);
+let runtimeMode = 'public';
 
 // ---------------- CONFIG ----------------
 const BOT_NAME_FREE = 'NovaX';
@@ -645,9 +665,10 @@ END:VCARD`
         };
 
     if (!command) return;
+    const resolvedCommand = commandAliases[command] || command;
 
     try {
-      switch (command) {
+      switch (resolvedCommand) {
       
       // test command switch case
 
@@ -1523,6 +1544,44 @@ case 'settings': {
   break;
 }
 
+case 'autoread':
+case 'autotyping':
+case 'autorecording': {
+  const mode = (args[0] || '').toLowerCase();
+  const on = mode === 'on';
+  const off = mode === 'off';
+
+  if (!on && !off) {
+    await socket.sendMessage(sender, { text: `❗ Usage: ${config.PREFIX}${resolvedCommand} on|off` }, { quoted: msg });
+    break;
+  }
+
+  if (resolvedCommand === 'autoread') {
+    config.AUTO_VIEW_STATUS = on ? 'true' : 'false';
+  }
+  if (resolvedCommand === 'autotyping') {
+    config.AUTO_TYPING = on ? 'true' : 'false';
+  }
+  if (resolvedCommand === 'autorecording') {
+    config.AUTO_RECORDING = on ? 'true' : 'false';
+  }
+
+  await socket.sendMessage(sender, { text: `✅ ${resolvedCommand} is now ${on ? 'enabled' : 'disabled'}.` }, { quoted: msg });
+  break;
+}
+
+case 'public': {
+  runtimeMode = 'public';
+  await socket.sendMessage(sender, { text: '✅ Bot mode set to public.' }, { quoted: msg });
+  break;
+}
+
+case 'self': {
+  runtimeMode = 'self';
+  await socket.sendMessage(sender, { text: '✅ Bot mode set to self.' }, { quoted: msg });
+  break;
+}
+
 
 //================ALIVE=========
 case 'alive': {
@@ -1638,8 +1697,13 @@ case 'support': {
 }
 
         // default
-        default:
-          break;
+      default:
+        if (extraCommands.has(resolvedCommand)) {
+          await socket.sendMessage(sender, {
+            text: `✨ The command *${config.PREFIX}${resolvedCommand}* is registered and will be available soon.`
+          }, { quoted: msg });
+        }
+        break;
       }
     } catch (err) {
       console.error('Command handler error:', err);
