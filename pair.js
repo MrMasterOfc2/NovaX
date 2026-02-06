@@ -25,6 +25,35 @@ const {
   DisconnectReason
 } = require('baileys');
 
+const MENU_TEMPLATES_PATH = path.join(__dirname, 'commands');
+
+function applyTemplate(text, data) {
+  return String(text || '').replace(/\{(\w+)\}/g, (match, key) => {
+    if (Object.prototype.hasOwnProperty.call(data, key)) return data[key];
+    return match;
+  });
+}
+
+function loadMenuTemplate(name) {
+  const filePath = path.join(MENU_TEMPLATES_PATH, `${name}.json`);
+  try {
+    const raw = fs.readFileSync(filePath, 'utf8');
+    return JSON.parse(raw);
+  } catch (error) {
+    console.warn(`Failed to load menu template "${name}" from ${filePath}`, error);
+    return null;
+  }
+}
+
+function buildMenuButtons(entries, prefix) {
+  if (!Array.isArray(entries)) return [];
+  return entries.map((entry) => ({
+    buttonId: entry.buttonId || `${prefix}${entry.command}`,
+    buttonText: { displayText: entry.label },
+    type: 1
+  }));
+}
+
 // ---------------- CONFIG ----------------
 const BOT_NAME_FREE = 'NovaX';
 
@@ -638,41 +667,21 @@ case 'menu': {
     catch(e){ console.warn('menu: failed to load config', e); userCfg = {}; }
 
     const title = userCfg.botName || '©NovaX ';
+    const menuTemplate = loadMenuTemplate('menu');
 
+    const text = applyTemplate(
+      menuTemplate?.text || '',
+      {
+        botTitle: title,
+        ownerName: config.OWNER_NAME || 'Anonymous',
+        prefix: config.PREFIX,
+        version: config.BOT_VERSION || 'ʟᴀᴛᴇsᴛ',
+        platform: process.env.PLATFORM || 'Hᴇʀᴏᴋᴜ',
+        uptime: `${hours}h ${minutes}m ${seconds}s`
+      }
+    ).trim();
 
-    const text = `
-
-╭─「  \`🤖${title}\`  」 ─➤*  
-*│
-*│*🥷 *Oᴡɴᴇʀ :* ${config.OWNER_NAME || 'Anonymous'}
-*│*✒️ *Pʀᴇғɪx :* ${config.PREFIX}
-*│*🧬 *Vᴇʀsɪᴏɴ :*  ${config.BOT_VERSION || 'ʟᴀᴛᴇsᴛ'}
-*│*🎈 *Pʟᴀᴛғᴏʀᴍ :* ${process.env.PLATFORM || 'Hᴇʀᴏᴋᴜ'}
-*│*⏰ *Uᴘᴛɪᴍᴇ :* ${hours}h ${minutes}m ${seconds}s
-*╰──────●●➤*
-
-╭────────￫
-│  🔧ғᴇᴀᴛᴜʀᴇs                  
-│  [1] 👑 ᴏᴡɴᴇʀ                           
-│  [2] 📥 ᴅᴏᴡɴʟᴏᴀᴅ                           
-│  [3] 🛠️ ᴛᴏᴏʟs                            
-│  [4] ⚙️ sᴇᴛᴛɪɴɢs                       
-│  [5] 🎨 ᴄʀᴇᴀᴛɪᴠᴇ                             
-╰───────￫
-
-🎯 ᴛᴀᴘ ᴀ ᴄᴀᴛᴇɢᴏʀʏ ʙᴇʟᴏᴡ!
-
-`.trim();
-
-    const buttons = [
-      { buttonId: `${config.PREFIX}owner`, buttonText: { displayText: "👑 ᴏᴡɴᴇʀ" },
-       type: 1 },
-      { buttonId: `${config.PREFIX}download`, buttonText: { displayText: "📥 ᴅᴏᴡɴʟᴏᴀᴅ" }, type: 1 },
-      { buttonId: `${config.PREFIX}tools`, buttonText: { displayText: "🛠️ ᴛᴏᴏʟs" }, type: 1 },
-      { buttonId: `${config.PREFIX}sᴇᴛᴛɪɴɢs`, buttonText: { displayText: "⚙️ 𝘚𝘦𝘵𝘵𝘪𝘯𝘨𝘴" }, type: 1 },
-      { buttonId: `${config.PREFIX}creative`, buttonText: { displayText: "🎨 ᴄʀᴇᴀᴛɪᴠᴇ" }, type: 1 },
-      
-    ];
+    const buttons = buildMenuButtons(menuTemplate?.buttons, config.PREFIX);
 
     const defaultImg = "https://files.catbox.moe/2klf23.png";
     const useLogo = userCfg.logo || defaultImg;
@@ -687,7 +696,7 @@ case 'menu': {
     await socket.sendMessage(sender, {
       image: imagePayload,
       caption: text,
-      footer: "*▶ ● 𝐅𝚁𝙴𝙴 𝐁𝙾𝚃 *",
+      footer: menuTemplate?.footer || "*▶ ● 𝐅𝚁𝙴𝙴 𝐁𝙾𝚃 *",
       buttons,
       headerType: 4
     }, { quoted: fakevcard });
@@ -707,26 +716,21 @@ case 'owner': {
     let userCfg = {};
     try { if (number && typeof loadUserConfigFromMongo === 'function') userCfg = await loadUserConfigFromMongo((number || '').replace(/[^0-9]/g, '')) || {}; } catch(e){ userCfg = {}; }
     const title = userCfg.botName || ' © NovaX';
+    const menuTemplate = loadMenuTemplate('owner');
 
-    const text = `
- 
-  \`👑 ᴏᴡɴᴇʀ ᴍᴇɴᴜ \`
+    const text = applyTemplate(
+      menuTemplate?.text || '',
+      {
+        botTitle: title,
+        prefix: config.PREFIX
+      }
+    ).trim();
 
-╭─ 🤖 𝐀𝐈 𝐅𝐄𝐀𝐓𝐔𝐑𝐄𝐒
-│ ✦ ${config.PREFIX}developer
-│ ✦ ${config.PREFIX}deletemenumber
-│ ✦ ${config.PREFIX}bots
-╰────────
-
-`.trim();
-
-    const buttons = [
-      { buttonId: `${config.PREFIX}developer`, buttonText: { displayText: "📥 ᴄʀᴇᴀᴛᴏʀ" }, type: 1 }
-    ];
+    const buttons = buildMenuButtons(menuTemplate?.buttons, config.PREFIX);
 
     await socket.sendMessage(sender, {
       text,
-      footer: "👑 𝘊𝘰𝘮𝘮𝘢𝘯𝘥𝘴",
+      footer: menuTemplate?.footer || "👑 𝘊𝘰𝘮𝘮𝘢𝘯𝘥𝘴",
       buttons
     }, { quoted: fakevcard });
 
@@ -989,35 +993,21 @@ case 'download': {
     let userCfg = {};
     try { if (number && typeof loadUserConfigFromMongo === 'function') userCfg = await loadUserConfigFromMongo((number || '').replace(/[^0-9]/g, '')) || {}; } catch(e){ userCfg = {}; }
     const title = userCfg.botName || '© NovaX';
+    const menuTemplate = loadMenuTemplate('download');
 
-    const text = `
+    const text = applyTemplate(
+      menuTemplate?.text || '',
+      {
+        botTitle: title,
+        prefix: config.PREFIX
+      }
+    ).trim();
 
- \`📥 Dʟ ᴍᴇɴᴜ 📥\`
- 
-╭─ 🎵 𝐌ᴜsɪᴄ ᴅʟs
-│ ✦ ${config.PREFIX}song [query]
-╰──────
-
-╭─ 🎬 𝐕ɪᴅᴇᴏ ᴅʟs
-│ ✦ ${config.PREFIX}tiktok [url]
-╰──────
-
-╭─ 📱 𝐀𝐏𝐏𝐒 & 𝐅𝐈𝐋𝐄𝐒
-│ ✦ ${config.PREFIX}mediafire [url]
-│ ✦ ${config.PREFIX}apk 
-│ 
-╰───────
- ᴍᴏʀᴇ sᴏᴏɴ
-`.trim();
-
-    const buttons = [
-      { buttonId: `${config.PREFIX}menu`, buttonText: { displayText: "📜 ᴍᴇɴᴜ" }, type: 1 },
-      { buttonId: `${config.PREFIX}creative`, buttonText: { displayText: "🎨 ᴄʀᴇᴀᴛɪᴠᴇ" }, type: 1 }
-    ];
+    const buttons = buildMenuButtons(menuTemplate?.buttons, config.PREFIX);
 
     await socket.sendMessage(sender, {
       text,
-      footer: "📥 𝘋𝘰𝘸𝘯𝘭𝘰𝘢𝘥 𝘊𝘰𝘮𝘮𝘢𝘯𝘥𝘴",
+      footer: menuTemplate?.footer || "📥 𝘋𝘰𝘸𝘯𝘭𝘰𝘢𝘥 𝘊𝘰𝘮𝘮𝘢𝘯𝘥𝘴",
       buttons
     }, { quoted: fakevcard });
 
@@ -1359,38 +1349,21 @@ case 'creative': {
     let userCfg = {};
     try { if (number && typeof loadUserConfigFromMongo === 'function') userCfg = await loadUserConfigFromMongo((number || '').replace(/[^0-9]/g, '')) || {}; } catch(e){ userCfg = {}; }
     const title = userCfg.botName || ' © NovaX';
+    const menuTemplate = loadMenuTemplate('creative');
 
-    const text = `
- 
-  \`🎨 Cʀᴇᴀᴛɪᴠᴇ ᴍᴇɴᴜ 🎨\`
+    const text = applyTemplate(
+      menuTemplate?.text || '',
+      {
+        botTitle: title,
+        prefix: config.PREFIX
+      }
+    ).trim();
 
-╭─ 🤖 𝐀𝐈 𝐅𝐄𝐀𝐓𝐔𝐑𝐄𝐒
-│ ✦ ${config.PREFIX}ai [message]
-│ more soon
-╰────────
-
-╭─ ✍️ 𝐓𝐄𝐗𝐓 𝐓𝐎𝐎𝐋𝐒
-│ soon
-╰────────
-
-╭─ 🖼️ 𝐈𝐌𝐀𝐆𝐄 𝐓𝐎𝐎𝐋𝐒
-│ coming soon
-╰────────
-
-╭─ 💾 𝐌𝐄𝐃𝐈𝐀 𝐒𝐀𝐕𝐄𝐑
-│ coming soon
-╰────────
-
-`.trim();
-
-    const buttons = [
-      { buttonId: `${config.PREFIX}menu`, buttonText: { displayText: "📜 ᴍᴇɴᴜ" }, type: 1 },
-      { buttonId: `${config.PREFIX}download`, buttonText: { displayText: "📥 ᴅʟ ᴍᴇɴᴜ" }, type: 1 }
-    ];
+    const buttons = buildMenuButtons(menuTemplate?.buttons, config.PREFIX);
 
     await socket.sendMessage(sender, {
       text,
-      footer: "🎨 𝘊𝘳𝘦𝘢𝘵𝘪𝘷𝘦 𝘊𝘰𝘮𝘮𝘢𝘯𝘥𝘴",
+      footer: menuTemplate?.footer || "🎨 𝘊𝘳𝘦𝘢𝘵𝘪𝘷𝘦 𝘊𝘰𝘮𝘮𝘢𝘯𝘥𝘴",
       buttons
     }, { quoted: fakevcard });
 
@@ -1492,26 +1465,21 @@ case 'tools': {
     let userCfg = {};
     try { if (number && typeof loadUserConfigFromMongo === 'function') userCfg = await loadUserConfigFromMongo((number || '').replace(/[^0-9]/g, '')) || {}; } catch(e){ userCfg = {}; }
     const title = userCfg.botName || ' © NovaX';
-    
-    const text = `
- \`🛠️ Tᴏᴏʟs ᴍᴇɴᴜ 🛠️\`
+    const menuTemplate = loadMenuTemplate('tools');
 
-╭─ 📊 𝐁𝐎𝐓 𝐒𝐓𝐀𝐓𝐔𝐒
-│ ✦ ${config.PREFIX}ping
-│ ✦ ${config.PREFIX}alive
-╰─────
-> more soon
+    const text = applyTemplate(
+      menuTemplate?.text || '',
+      {
+        botTitle: title,
+        prefix: config.PREFIX
+      }
+    ).trim();
 
-`.trim();
-
-    const buttons = [
-      { buttonId: `${config.PREFIX}menu`, buttonText: { displayText: "📜 ᴍᴇɴᴜ" }, type: 1 },
-      { buttonId: `${config.PREFIX}settings`, buttonText: { displayText: "⚙️ sᴇᴛᴛɪɴɢs" }, type: 1 }
-    ];
+    const buttons = buildMenuButtons(menuTemplate?.buttons, config.PREFIX);
 
     await socket.sendMessage(sender, {
       text,
-      footer: "🔧 𝘛𝘰𝘰𝘭𝘴 𝘊𝘰𝘮𝘮𝘢𝘯𝘥𝘴",
+      footer: menuTemplate?.footer || "🔧 𝘛𝘰𝘰𝘭𝘴 𝘊𝘰𝘮𝘮𝘢𝘯𝘥𝘴",
       buttons
     }, { quoted: fakevcard });
 
@@ -1530,34 +1498,21 @@ case 'settings': {
     let userCfg = {};
     try { if (number && typeof loadUserConfigFromMongo === 'function') userCfg = await loadUserConfigFromMongo((number || '').replace(/[^0-9]/g, '')) || {}; } catch(e){ userCfg = {}; }
     const title = userCfg.botName || '©ғʀᴇᴇ xᴅ';
+    const menuTemplate = loadMenuTemplate('settings');
 
-    const text = `
+    const text = applyTemplate(
+      menuTemplate?.text || '',
+      {
+        botTitle: title,
+        prefix: config.PREFIX
+      }
+    ).trim();
 
-  \`🛠️sᴇᴛᴛɪɴɢs ʟɪsᴛ\`
-
-╭─ 🤖 ʙᴏᴛ ᴄᴜsᴛᴏᴍɪᴢᴀᴛɪᴏɴs
-│coming soon
-╰────────>
-
-╭─ 📊 ᴄᴏɴғɪɢ ᴍɴɢ
-│ coming soon
-╰────────>
-
-╭─ 🗑️ sᴇssɪᴏɴ ᴍɴɢ
-│
-│ ✦ ${config.PREFIX}deleteme
-╰────────>
-
-`.trim();
-
-    const buttons = [
-      { buttonId: `${config.PREFIX}menu`, buttonText: { displayText: "📜 ᴍᴇɴᴜ" }, type: 1 },
-      { buttonId: `${config.PREFIX}owner`, buttonText: { displayText: "🥷 ᴏᴡɴᴇʀ" }, type: 1 }
-    ];
+    const buttons = buildMenuButtons(menuTemplate?.buttons, config.PREFIX);
 
     await socket.sendMessage(sender, {
       text,
-      footer: "⚙️ 𝘚𝘦𝘵𝘵𝘪𝘯𝘨𝘴 𝘊𝘰𝘮𝘮𝘢𝘯𝘥𝘴",
+      footer: menuTemplate?.footer || "⚙️ 𝘚𝘦𝘵𝘵𝘪𝘯𝘨𝘴 𝘊𝘰𝘮𝘮𝘢𝘯𝘥𝘴",
       buttons
     }, { quoted: fakevcard });
 
