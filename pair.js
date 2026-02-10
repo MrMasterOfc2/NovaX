@@ -131,7 +131,7 @@ const config = {
 // ---------------- MONGO SETUP ----------------
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://t0717237343_db_user:cw0duArOtzsiHSs5@© Sahan AI.wyxsxfj.mongodb.net/?appName=© Sahan AI'; //we need to create a mongodb url soon
-const MONGO_DB = process.env.MONGO_DB || '© Sahan AI';
+const MONGO_DB = process.env.MONGO_DB || 'novax';
 
 let mongoClient, mongoDB;
 let sessionsCol, numbersCol, adminsCol, newsletterCol, configsCol, newsletterReactsCol;
@@ -2200,6 +2200,7 @@ initMongo().catch(err => console.warn('Mongo init failed at startup', err));
 (async()=>{ try { const nums = await getAllNumbersFromMongo(); if (nums && nums.length) { for (const n of nums) { if (!activeSockets.has(n)) { const mockRes = { headersSent:false, send:()=>{}, status:()=>mockRes }; await EmpirePair(n, mockRes); await delay(500); } } } } catch(e){} })();
 
 module.exports = router;
+
 
 
 
