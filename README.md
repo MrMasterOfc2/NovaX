@@ -21,7 +21,7 @@
 ## 🌐 Deploy
 
 ### Heroku
-[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/anonymousofficial26/NovaX)
+[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/MrMasterOfc2/NovaX)
 
 ### Other Platforms
 - Railway
