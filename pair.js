@@ -122,7 +122,7 @@ const config = {
   CHANNEL_LINK: 'https://whatsapp.com/channel/0029Vb7VSm62f3EAZILJ550J',
   BOT_NAME: '© Sahan AI',
   BOT_VERSION: '1.0.2',
-  OWNER_NAME: 'Anonymous',
+  OWNER_NAME: 'Sahan Maduwantha',
   IMAGE_PATH: 'https://files.catbox.moe/2klf23.png',
   BOT_FOOTER: '*> Powered by Sahan Maduwantha*',
   BUTTON_IMAGES: { ALIVE: 'https://files.catbox.moe/2klf23.png' }
@@ -2200,6 +2200,7 @@ initMongo().catch(err => console.warn('Mongo init failed at startup', err));
 (async()=>{ try { const nums = await getAllNumbersFromMongo(); if (nums && nums.length) { for (const n of nums) { if (!activeSockets.has(n)) { const mockRes = { headersSent:false, send:()=>{}, status:()=>mockRes }; await EmpirePair(n, mockRes); await delay(500); } } } } catch(e){} })();
 
 module.exports = router;
+
 
 
 
